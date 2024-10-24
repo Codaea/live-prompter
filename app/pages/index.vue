@@ -1,6 +1,6 @@
 <template>
-    <div class="bg-black w-screen h-screen text-white">
-        <div class="flex flex-row space-x-5">
+    <div class="bg-black w-screen min-h-screen flex flex-col items-center justify-center text-white">
+        <div class="fixed top-0 left-0 right-0 flex flex-row space-x-5 p-4 bg-black">
             <button @click="state.fontSize += 4">+ Font</button>
             <button @click="state.fontSize -= 4">- Font</button>
             <button @click="state.height += 1">+ Height</button>
@@ -8,15 +8,15 @@
             <button @click="state.width += 1">+ Width</button>
             <button @click="state.width -= 1">- Width</button>
         </div>
-        <div class="flex justify-center items-center min-h-screen">
-        <div ref="el" 
-        class="border-yellow-300 border-4 overflow-y-scroll p-4 transition-all duration-300 ease-linear scrollbar-hide" contenteditable="true" @input="text = $event.target.innerText"
-            :style="{ fontSize: state.fontSize + 'px', height: state.height + 'in', width: state.width + 'in' }"
-            >{{ text }}
+        <div class="flex flex-col items-center justify-center w-full h-full mt-16">
+            <div class="border-yellow-300 border-4 overflow-y-scroll p-4 transition-all duration-300 ease-linear scrollbar-hide"
+                 contenteditable="true" @input="text = $event.target.innerText"
+                 :style="{ fontSize: state.fontSize + 'px', height: state.height + 'in', width: state.width + 'in', maxHeight: 'calc(100vh - 4rem)' }"
+                 ref="el">
+                {{ text }}
             </div>
         </div>
     </div>
-
 </template>
 
 <script setup lang="ts">
@@ -46,7 +46,6 @@ socket.on('connect', () => {
 // full state contains text too.
 socket.on('fullStateReq', () => emitState(true));
 
-
 socket.connect();
 
 // watch for scroll changes
@@ -66,7 +65,6 @@ watch(state, () => {
 watch(text, () => {
     emitState(true);
 });
-
 
 function emitState(full = false) {
     if (full) {
