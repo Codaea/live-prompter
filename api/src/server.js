@@ -28,8 +28,8 @@ function handler(socket) {
     socket.on('joinRoom', (room) => {
         socket.join(room);
         console.log('User joined room', room);
-        socket.to(room).emit('reqState', 'User joined'); // request state from master so that new user syncs
-    })
+        socket.to(room).emit('fullStateReq', 'User joined'); // request (full) state from master so that new user syncs
+    }) 
 
     socket.on('leaveRoom', (room) => {
         socket.leave(room);

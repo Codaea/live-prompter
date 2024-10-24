@@ -10,9 +10,9 @@
         </div>
         <div class="flex justify-center items-center min-h-screen">
         <div ref="el" 
-        class="border-yellow-300 border-4 overflow-y-scroll p-4 transition-all duration-300 ease-linear scrollbar-hide" contenteditable="true" @input="state.text = $event.target.innerText"
+        class="border-yellow-300 border-4 overflow-y-scroll p-4 transition-all duration-300 ease-linear scrollbar-hide" contenteditable="true" @input="text = $event.target.innerText"
             :style="{ fontSize: state.fontSize + 'px', height: state.height + 'in', width: state.width + 'in' }"
-            >{{ state.text }}
+            >{{ text }}
             </div>
         </div>
     </div>
@@ -23,14 +23,13 @@
 import { io } from 'socket.io-client';
 import { useScroll } from '@vueuse/core';
 
+// state for reactive variables (quick updating)
 const state = reactive({
     fontSize: 64,
     height: 4,
     width: 4,
-    text: 'Some Content here NGL',
-    y: 0,
 });
-
+const text = ref('')
 
 const socket = io('http://localhost:8000');
 
@@ -44,7 +43,8 @@ socket.on('connect', () => {
 });
 
 // called when new user joins and wants state
-socket.on('reqState', emitState);
+// full state contains text too.
+socket.on('fullStateReq', () => emitState(true));
 
 
 socket.connect();
@@ -57,22 +57,38 @@ watch(y, () => {
     });
 });
 
-// watch for state changes
+// watch for state changes (not including text)
 watch(state, () => {
     emitState();
 });
 
+// watch for text changes, so we emit full state
+watch(text, () => {
+    emitState(true);
+});
 
-function emitState() {
+
+function emitState(full = false) {
+    if (full) {
+        socket.emit('state', {
+            room: 'room1',
+            state: {
+                fontSize: state.fontSize,
+                height: state.height,
+                width: state.width,
+                text: text.value,
+            }
+        });
+    } else {
     socket.emit('state', {
         room: 'room1',
         state: {
             fontSize: state.fontSize,
             height: state.height,
             width: state.width,
-            text: state.text
         }
     });
+    }
 }
 
 </script>

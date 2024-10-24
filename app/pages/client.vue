@@ -43,7 +43,9 @@ socket.on('state', (data: { fontSize: number, height: number, width: number, tex
     state.fontSize = data.fontSize;
     state.height = data.height;
     state.width = data.width;
-    state.text = data.text;
+    if (data.text) { // if text is included in update data, update text
+        state.text = data.text;
+    }
 });
 
 socket.on('yUpdate', (remoteY) => {
