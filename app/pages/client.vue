@@ -1,12 +1,14 @@
 <template>
     <div class="bg-black w-screen h-screen text-white">
-        <div class="flex flex-row space-x-5">
+        <div class="fixed top-0 left-0 right-0 flex flex-row space-x-5 p-4 bg-black">
+            <button @click="local.flipX = !local.flipX">Flip X</button>
+            <button @click="local.flipY= !local.flipY">Flip Y</button>
         </div>
         <div class="flex justify-center items-center min-h-screen">
         <div ref="el" 
         class="border-yellow-300 border-4 overflow-y-scroll p-4 transition-all duration-300 ease-linear scrollbar-hide" @input="state.text = $event.target.innerText"
-            :style="{ fontSize: state.fontSize + 'px', height: state.height + 'in', width: state.width + 'in' }"
-            >{{ state.text }}
+        :style="{ fontSize: state.fontSize + 'px', height: state.height + 'in', width: state.width + 'in', maxHeight: 'calc(100vh - 4rem)', transform: `scaleX(${local.flipX ? -1 : 1}) scaleY(${local.flipY ? -1 : 1})` }"
+        >{{ state.text }}
             </div>
         </div>
     </div>
@@ -25,6 +27,12 @@ const state = reactive({
     text: 'Connecting...',
     y: 0,
 });
+
+// local state for non-shared variables
+const local = reactive({
+    flipX: false,
+    flipY: false,
+})
 
 const xFlip = ref(false);
 const yFlip = ref(false);
