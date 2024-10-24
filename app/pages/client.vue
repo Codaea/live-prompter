@@ -39,7 +39,7 @@ const yFlip = ref(false);
 
 const el = ref<HTMLElement | null>(null);
 
-const scroll  = useScroll(el);
+const scroll  = useScroll(el, { behavior: 'smooth' });
 
 socket.on('connect', () => {
     console.log('Connected to server');

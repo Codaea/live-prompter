@@ -24,6 +24,7 @@
 <script setup lang="ts">
 import { io } from 'socket.io-client';
 import { useScroll } from '@vueuse/core';
+import throttle from 'lodash/throttle';
 
 // state for reactive variables (quick updating)
 const state = reactive({
@@ -58,21 +59,27 @@ socket.connect();
 
 // watch for scroll changes
 watch(y, () => {
-    socket.emit('yUpdate', {
-        room: 'room1', // Add room information
-        y: y.value
-    });
+    throttleYUpdate()
 });
 
 // watch for state changes (not including text)
 watch(state, () => {
-    emitState();
+    throttleEmitState();
 });
 
 // watch for text changes, so we emit full state
 watch(text, () => {
-    emitState(true);
+    throttleEmitState(true);
 });
+
+const throttleEmitState = throttle(emitState, 1000); // throttle emit state (config stuff) to 1 second
+
+const throttleYUpdate = throttle(() => {
+    socket.emit('yUpdate', {
+        room: 'room1',
+        y: y.value
+    });
+}, 50); // throttle y update to 100ms
 
 function emitState(full = false) {
     if (full) {
